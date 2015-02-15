@@ -1,3 +1,4 @@
+var fs = require('fs');
 var express = require('express');
 var app = express();
 var cookieParser = require('cookie-parser');
@@ -9,6 +10,8 @@ var config = require('./config');
 var request = require('request');
 var vso = require('./lib/vso');
 var User = require('./models/user');
+
+var indexContent = fs.readFileSync('templates/index.html', 'utf8');
 
 app.use(function(req, res, next) {
   if(req.cookies.sessionId) {
@@ -80,7 +83,7 @@ app.get('/auth/provider/callback', function(req, res) {
 
 app.get('/', function(req, res) {
   vso.getProfile(req.user.getToken()).then(function(profile) {
-    res.send(JSON.stringify(profile));
+    res.send(indexContent.replace("{{userState}}", JSON.stringify(profile)));
   });
 }); 
 
